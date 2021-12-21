@@ -113,7 +113,7 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// fmt.Println("Original message:")
 	// fmt.Println(payload.OriginalMessage)
 	// fmt.Printf("\nText:")
-	// fmt.Println(payload.OriginalMessage.Msg.Text)
+	fmt.Println(payload.OriginalMessage)
 	// fmt.Println("action callback")
 	// fmt.Println(payload.ActionCallback)
 
