@@ -106,14 +106,16 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Printf("Could not parse action response JSON: %v", err)
 	}
-	fmt.Println(payload)
+	// fmt.Println(payload)
 	// fmt.Printf("Message button pressed by user %s with value %s", payload.User.Name, payload.Value)
 	// fmt.Printf("callback id: %s", payload.CallbackID)
 	// fmt.Printf("responseurl: %s", payload.ResponseURL)
 	// fmt.Println("Original message:")
 	// fmt.Println(payload.OriginalMessage)
 	// fmt.Printf("\nText:")
-	fmt.Println(payload.OriginalMessage)
+	fmt.Println(payload.OriginalMessage.Text)
+	fmt.Println("empty line")
+	fmt.Println(payload.OriginalMessage.Msg.Text)
 	// fmt.Println("action callback")
 	// fmt.Println(payload.ActionCallback)
 

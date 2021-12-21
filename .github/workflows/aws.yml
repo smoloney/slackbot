@@ -93,6 +93,6 @@ jobs:
         task-definition: ${{ steps.task-def.outputs.task-definition }}
         service: ${{ env.ECS_SERVICE }}
         cluster: ${{ env.ECS_CLUSTER }}
-        wait-for-service-stability: true
+        wait-for-service-stability: false
     - name: Signal slack
       run: curl "http://alb-1-1280613927.us-west-2.elb.amazonaws.com/action-complete?id=blue"
