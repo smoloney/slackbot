@@ -28,9 +28,9 @@ func main() {
 }
 
 func actionComplete(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(w)
 	fmt.Println(r)
 	api := slack.New(token)
+
 	attachment := slack.Attachment{
 		Text:       "Foobar i am santa",
 		Fallback:   "Deployment to",
