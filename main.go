@@ -28,11 +28,13 @@ func main() {
 }
 
 func actionComplete(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(w)
+	fmt.Println(r)
 	api := slack.New(token)
 	attachment := slack.Attachment{
 		Text:       "Foobar i am santa",
-		Fallback:   "We don't currently support your client",
-		CallbackID: "accept_or_reject",
+		Fallback:   "Deployment to",
+		CallbackID: "deployment",
 		Color:      "#3AA3E3",
 		Actions: []slack.AttachmentAction{
 			slack.AttachmentAction{
