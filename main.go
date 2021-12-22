@@ -29,6 +29,8 @@ func main() {
 
 func actionComplete(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(r)
+	fmt.Printf("URL: %s\n", r.URL)
+	fmt.Printf("Req: %s %s\n", r.Host, r.URL.Path)
 	api := slack.New(token)
 
 	attachment := slack.Attachment{
