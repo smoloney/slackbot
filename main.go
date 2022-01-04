@@ -100,6 +100,7 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// log.Println(payload)
 
 	log.Println(payload.OriginalMessage.Msg)
+	log.Println(payload.ActionCallback.AttachmentActions)
 
 	// var jsonStr = []byte(`{"ref":"main"}`)
 
