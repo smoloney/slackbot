@@ -54,34 +54,20 @@ func actionComplete(w http.ResponseWriter, r *http.Request) {
 		Fallback:   fallBackText,
 		CallbackID: "deployment",
 		Color:      "#3AA3E3",
-		// Actions: []slack.AttachmentAction{
-		// 	slack.AttachmentAction{
-		// 		Name:  "deploy",
-		// 		Text:  "Deploy",
-		// 		Type:  "button",
-		// 		Value: "deploy",
-		// 	},
-		// 	slack.AttachmentAction{
-		// 		Name:  "reject",
-		// 		Text:  "Reject",
-		// 		Type:  "button",
-		// 		Value: "reject",
-		// 		Style: "danger",
-		// 	},
-		// },
-	}
-
-	attachment.Blocks = slack.Blocks{
-		BlockSet: []slack.Block{
-			// Create a new section block element and add some text and the accessory to it
-			slack.NewSectionBlock(
-				&slack.TextBlockObject{
-					Type: slack.MarkdownType,
-					Text: "Did you think this article was helpful?",
-				},
-				nil,
-				nil,
-			),
+		Actions: []slack.AttachmentAction{
+			slack.AttachmentAction{
+				Name:  "deploy",
+				Text:  "Deploy",
+				Type:  "button",
+				Value: "deploy",
+			},
+			slack.AttachmentAction{
+				Name:  "reject",
+				Text:  "Reject",
+				Type:  "button",
+				Value: "reject",
+				Style: "danger",
+			},
 		},
 	}
 
