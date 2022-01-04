@@ -94,5 +94,11 @@ jobs:
         service: ${{ env.ECS_SERVICE }}
         cluster: ${{ env.ECS_CLUSTER }}
         wait-for-service-stability: false
+    - uses: nrwl/last-succesful-commit-action@v1
+      id: last-commit
+      with:
+        branch: 'main'
+        workflow_id: 'Deploy to Amazon ECS'
+        github_token: ${{ secrets.GIT_TOKEN }}
     - name: Signal slack
-      run: curl "http://alb-1-1280613927.us-west-2.elb.amazonaws.com/action-complete?id=blue"
+      run: curl "http://alb-1-1280613927.us-west-2.elb.amazonaws.com/action-complete?id=smoloney/slack-go&sha=${env.GITHUB_SHA}&lastSuccessSha=${steps.last-commit.outputs.commit_hash}"

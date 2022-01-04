@@ -19,10 +19,10 @@ var appToken = os.Getenv("SLACK_APP_TOKEN")
 
 func main() {
 	fmt.Println("Hello world")
-	parseJson()
+	// parseJson()
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/hello", ServeHTTP)
-	router.HandleFunc("/action-complete", actionComplete).Queries("id", "{id:[a-zA-Z0-9]+}", "sha", "{sha:[a-zA-Z0-9]+}")
+	router.HandleFunc("/action-complete", actionComplete).Queries("id", "{id:[a-zA-Z0-9]+}", "sha", "{sha:[a-zA-Z0-9]+}", "lastSuccessSha", "{lastSuccessSha:[a-zA-Z0-9]+}")
 	router.HandleFunc("/health", healthCheckHandler)
 
 	http.ListenAndServe("0.0.0.0:5000", router)
