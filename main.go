@@ -126,12 +126,8 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Printf("Could not parse action response JSON: %v", err)
 	}
+	fmt.Println("Printing payload")
 	fmt.Println(payload)
-	// fmt.Println(payload.OriginalMessage.Text)
-	// fmt.Println("empty line")
-	// fmt.Println(payload.OriginalMessage.Msg.Text)
-	// fmt.Println("action callback")
-	// fmt.Println(payload.ActionCallback)
 
 	// var jsonStr = []byte(`{"ref":"main"}`)
 
