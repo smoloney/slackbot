@@ -94,7 +94,7 @@ jobs:
         service: ${{ env.ECS_SERVICE }}
         cluster: ${{ env.ECS_CLUSTER }}
         wait-for-service-stability: false
-    - uses: nrwl/last-succesful-commit-action@v1
+    - uses: nrwl/last-successful-commit-action@v1
       id: last-commit
       with:
         branch: 'main'
