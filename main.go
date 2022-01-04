@@ -22,7 +22,7 @@ func main() {
 	// parseJson()
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/hello", ServeHTTP)
-	router.HandleFunc("/action-complete", actionComplete).Queries("id", "{id:[a-zA-Z0-9]+}", "sha", "{sha:[a-zA-Z0-9]+}", "lastSuccessSha", "{lastSuccessSha:[a-zA-Z0-9]+}")
+	router.HandleFunc("/action-complete", actionComplete).Queries("id", "{id:[a-zA-Z0-9_/-]+}", "sha", "{sha:[a-zA-Z0-9]+}", "lastSuccessSha", "{lastSuccessSha:[a-zA-Z0-9]+}")
 	router.HandleFunc("/health", healthCheckHandler)
 
 	http.ListenAndServe("0.0.0.0:5000", router)
