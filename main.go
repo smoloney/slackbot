@@ -90,44 +90,14 @@ func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func helloMessage() {
-
-	client := slack.New(token, slack.OptionDebug(true), slack.OptionAppLevelToken(appToken))
-	attachment := slack.Attachment{}
-	attachment.Fields = []slack.AttachmentField{
-		{
-			Title: "Date",
-			Value: time.Now().String(),
-		},
-	}
-
-	attachment.Actions = []slack.AttachmentAction{
-		{
-			Name: "Test button",
-			Text: "Cancel",
-			Type: "button",
-		},
-	}
-
-	attachment.Text = fmt.Sprintf("Hello world")
-	attachment.Color = "#4af030"
-
-	_, _, err := client.PostMessage("C02MV7GBU22", slack.MsgOptionAttachments(attachment))
-	if err != nil {
-		fmt.Errorf("failed to post message %w", err)
-	}
-}
-
 func ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	// fmt.Println(r)
-	// fmt.Println(r.Body)
 	var payload slack.InteractionCallback
 	err := json.Unmarshal([]byte(r.FormValue("payload")), &payload)
 	if err != nil {
 		fmt.Printf("Could not parse action response JSON: %v", err)
 	}
-	fmt.Println("Printing payload")
-	fmt.Println(payload)
+	log.Println("Printing payload")
+	log.Println(payload)
 
 	// var jsonStr = []byte(`{"ref":"main"}`)
 
@@ -239,31 +209,4 @@ func parseJson() {
 		fmt.Println(err)
 	}
 	fmt.Println(t)
-
-	// json.Unmarshal([]byte(jsonData), &jsonResult)
-	// // fmt.Println(jsonResult.TypeOf(jsonResult))
-	// fmt.Println(jsonResult["commit"])
-
-	// reader := strings.NewReader(jsonData)
-	// writer := os.Stdout
-
-	// dec := json.NewDecoder(reader)
-	// enc := json.NewEncoder(writer)
-	// for {
-	// 	// Read one JSON object and store it in a map.
-	// 	var m map[string]interface{}
-
-	// 	if err := dec.Decode(&m); err == io.EOF {
-	// 		break
-	// 	} else if err != nil {
-	// 		log.Fatal(err)
-	// 	}
-
-	// 	// Write the map as a JSON object.
-	// 	if err := enc.Encode(&m); err != nil {
-	// 		log.Println(err)
-	// 	}
-	// }
-
-	// fmt.Println(enc["commit"])
 }
