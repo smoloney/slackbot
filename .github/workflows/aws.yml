@@ -40,6 +40,7 @@ env:
                                                # file, e.g. .aws/task-definition.json
   CONTAINER_NAME: slack-bot           # set this to the name of the container in the
                                                # containerDefinitions section of your task definition
+  deploySha: ${GITHUB_SHA}
 
 jobs:
   deploy:
@@ -99,5 +100,7 @@ jobs:
       with:
         workflow_id: 'aws.yml'
         github_token: ${{ secrets.GIT_TOKEN }}
+    - name: test output
+      run: echo "${{ env.deploySha }}"
     - name: Signal slack
-      run: curl "http://alb-1-1280613927.us-west-2.elb.amazonaws.com/action-complete?id=smoloney/slack-go&sha=${GITHUB_SHA}&lastSuccessSha=${{ steps.last-commit.outputs.commit_hash }}"
+      run: curl "http://alb-1-1280613927.us-west-2.elb.amazonaws.com/action-complete?id=smoloney/slack-go&sha=${{ env.deploySha }}&lastSuccessSha=${{ steps.last-commit.outputs.commit_hash }}"
