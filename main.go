@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -18,40 +19,69 @@ var appToken = os.Getenv("SLACK_APP_TOKEN")
 
 func main() {
 	fmt.Println("Hello world")
+	parseJson()
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/hello", ServeHTTP)
-	router.HandleFunc("/action-complete", actionComplete).Queries("id", "{id:[a-zA-Z0-9]+}")
+	router.HandleFunc("/action-complete", actionComplete).Queries("id", "{id:[a-zA-Z0-9]+}", "sha", "{sha:[a-zA-Z0-9]+}")
 	router.HandleFunc("/health", healthCheckHandler)
 
 	http.ListenAndServe("0.0.0.0:5000", router)
 	fmt.Println("Listening on port :5000")
 }
 
+func queryParser(str string) map[string]string {
+	values := strings.Split(str, "&")
+
+	generateMap := make(map[string]string)
+	for _, e := range values {
+		parts := strings.Split(e, "=")
+		generateMap[parts[0]] = parts[1]
+	}
+
+	return generateMap
+}
+
 func actionComplete(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(r)
-	fmt.Printf("URL: %s\n", r.URL)
-	fmt.Printf("Req: %s %s\n", r.Host, r.URL.Path)
+	parsedQueries := queryParser(r.URL.RawQuery)
+	fmt.Println(parsedQueries)
+	fmt.Println(parsedQueries["id"])
+	textText := fmt.Sprintf("Deployment alert!\n Repo: %s SHA: %s", parsedQueries["id"], parsedQueries["sha"])
+	fallBackText := fmt.Sprintf("Deployment to %s", parsedQueries["id"])
 	api := slack.New(token)
 
 	attachment := slack.Attachment{
-		Text:       "Foobar i am santa",
-		Fallback:   "Deployment to",
+		Text:       textText,
+		Fallback:   fallBackText,
 		CallbackID: "deployment",
 		Color:      "#3AA3E3",
-		Actions: []slack.AttachmentAction{
-			slack.AttachmentAction{
-				Name:  "accept",
-				Text:  "Accept",
-				Type:  "button",
-				Value: "accept",
-			},
-			slack.AttachmentAction{
-				Name:  "reject",
-				Text:  "Reject",
-				Type:  "button",
-				Value: "reject",
-				Style: "danger",
-			},
+		// Actions: []slack.AttachmentAction{
+		// 	slack.AttachmentAction{
+		// 		Name:  "deploy",
+		// 		Text:  "Deploy",
+		// 		Type:  "button",
+		// 		Value: "deploy",
+		// 	},
+		// 	slack.AttachmentAction{
+		// 		Name:  "reject",
+		// 		Text:  "Reject",
+		// 		Type:  "button",
+		// 		Value: "reject",
+		// 		Style: "danger",
+		// 	},
+		// },
+	}
+
+	attachment.Blocks = slack.Blocks{
+		BlockSet: []slack.Block{
+			// Create a new section block element and add some text and the accessory to it
+			slack.NewSectionBlock(
+				&slack.TextBlockObject{
+					Type: slack.MarkdownType,
+					Text: "Did you think this article was helpful?",
+				},
+				nil,
+				nil,
+			),
 		},
 	}
 
@@ -110,16 +140,10 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Printf("Could not parse action response JSON: %v", err)
 	}
-	// fmt.Println(payload)
-	// fmt.Printf("Message button pressed by user %s with value %s", payload.User.Name, payload.Value)
-	// fmt.Printf("callback id: %s", payload.CallbackID)
-	// fmt.Printf("responseurl: %s", payload.ResponseURL)
-	// fmt.Println("Original message:")
-	// fmt.Println(payload.OriginalMessage)
-	// fmt.Printf("\nText:")
-	fmt.Println(payload.OriginalMessage.Text)
-	fmt.Println("empty line")
-	fmt.Println(payload.OriginalMessage.Msg.Text)
+	fmt.Println(payload)
+	// fmt.Println(payload.OriginalMessage.Text)
+	// fmt.Println("empty line")
+	// fmt.Println(payload.OriginalMessage.Msg.Text)
 	// fmt.Println("action callback")
 	// fmt.Println(payload.ActionCallback)
 
@@ -177,4 +201,87 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// // 	return
 	// // }
 
+}
+
+type JsonStruct struct {
+	Commit struct {
+		Author struct {
+			Date string `json:"date"`
+		}
+	}
+}
+
+func parseJson() {
+
+	jsonData := `{
+		"url": "https://api.github.com/repos/octocat/Hello-World/commits/6dcb09b5b57875f334f61aebed695e2e4193db5e",
+		"sha": "6dcb09b5b57875f334f61aebed695e2e4193db5e",
+		"node_id": "MDY6Q29tbWl0NmRjYjA5YjViNTc4NzVmMzM0ZjYxYWViZWQ2OTVlMmU0MTkzZGI1ZQ==",
+		"html_url": "https://github.com/octocat/Hello-World/commit/6dcb09b5b57875f334f61aebed695e2e4193db5e",
+		"comments_url": "https://api.github.com/repos/octocat/Hello-World/commits/6dcb09b5b57875f334f61aebed695e2e4193db5e/comments",
+		"commit": {
+		  "url": "https://api.github.com/repos/octocat/Hello-World/git/commits/6dcb09b5b57875f334f61aebed695e2e4193db5e",
+		  "author": {
+			"name": "Monalisa Octocat",
+			"email": "mona@github.com",
+			"date": "2011-04-14T16:00:49Z"
+		  },
+		  "committer": {
+			"name": "Monalisa Octocat",
+			"email": "mona@github.com",
+			"date": "2011-04-14T16:00:49Z"
+		  },
+		  "message": "Fix all the bugs",
+		  "tree": {
+			"url": "https://api.github.com/repos/octocat/Hello-World/tree/6dcb09b5b57875f334f61aebed695e2e4193db5e",
+			"sha": "6dcb09b5b57875f334f61aebed695e2e4193db5e"
+		  },
+		  "comment_count": 0,
+		  "verification": {
+			"verified": false,
+			"reason": "unsigned",
+			"signature": null,
+			"payload": null
+		  }
+		}
+	  }
+	`
+
+	var jsonValues JsonStruct
+
+	json.Unmarshal([]byte(jsonData), &jsonValues)
+	dateTime := jsonValues.Commit.Author.Date
+	layout := "2010-01-01T01:00:00z"
+	t, err := time.Parse(layout, dateTime)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(t)
+
+	// json.Unmarshal([]byte(jsonData), &jsonResult)
+	// // fmt.Println(jsonResult.TypeOf(jsonResult))
+	// fmt.Println(jsonResult["commit"])
+
+	// reader := strings.NewReader(jsonData)
+	// writer := os.Stdout
+
+	// dec := json.NewDecoder(reader)
+	// enc := json.NewEncoder(writer)
+	// for {
+	// 	// Read one JSON object and store it in a map.
+	// 	var m map[string]interface{}
+
+	// 	if err := dec.Decode(&m); err == io.EOF {
+	// 		break
+	// 	} else if err != nil {
+	// 		log.Fatal(err)
+	// 	}
+
+	// 	// Write the map as a JSON object.
+	// 	if err := enc.Encode(&m); err != nil {
+	// 		log.Println(err)
+	// 	}
+	// }
+
+	// fmt.Println(enc["commit"])
 }

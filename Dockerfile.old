@@ -1,8 +1,0 @@
-FROM python:3.9.9-alpine3.15
-
-COPY sample.py .
-COPY requirements.txt .
-
-RUN pip install -r requirements.txt 
-
-CMD [ "python3", "sample.py" ]
