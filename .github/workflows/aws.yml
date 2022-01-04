@@ -100,4 +100,4 @@ jobs:
         workflow_id: 'aws.yml'
         github_token: ${{ secrets.GIT_TOKEN }}
     - name: Signal slack
-      run: curl "http://alb-1-1280613927.us-west-2.elb.amazonaws.com/action-complete?id=smoloney/slack-go&sha=${{ env.GITHUB_SHA }}&lastSuccessSha=${{ steps.last-commit.outputs.commit_hash }}"
+      run: curl "http://alb-1-1280613927.us-west-2.elb.amazonaws.com/action-complete?id=smoloney/slack-go&sha=$GITHUB_SHA&lastSuccessSha=${{ steps.last-commit.outputs.commit_hash }}"
