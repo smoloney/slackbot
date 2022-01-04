@@ -96,8 +96,8 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Printf("Could not parse action response JSON: %v", err)
 	}
-	log.Println("Printing payload")
-	log.Println(payload)
+	// log.Println("Printing payload")
+	// log.Println(payload)
 
 	log.Println(payload.OriginalMessage.Msg)
 
