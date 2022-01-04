@@ -99,6 +99,8 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	log.Println("Printing payload")
 	log.Println(payload)
 
+	log.Println(payload.OriginalMessage.Msg)
+
 	// var jsonStr = []byte(`{"ref":"main"}`)
 
 	// req, err := http.NewRequest("POST", "https://api.github.com/repos/smoloney-org/hello-world/actions/workflows/15727762/dispatches", bytes.NewBuffer(jsonStr))
