@@ -96,15 +96,17 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	// log.Println("Printing payload")
 	// log.Println(payload)
-	fmt.Println("hello world1")
-	fmt.Println(payload.OriginalMessage.Msg.Attachments[0].Text)
+	// fmt.Println("hello world1")
+	// fmt.Println(payload.OriginalMessage.Msg.Attachments[0].Text)
 	// fmt.Println(payload.ActionCallback.AttachmentActions.Text)
 
 	outputText := payload.OriginalMessage.Msg.Attachments[0].Text
-
-	values := strings.Split(outputText, ":")
-
-	fmt.Printf("Values output: %s", values)
+	deployInfoMap := make(map[string]string)
+	for _, e := range outputText {
+		parts := strings.Split(string(e), ":")
+		deployInfoMap[parts[0]] = parts[1]
+	}
+	fmt.Println(deployInfoMap)
 
 	// var jsonStr = []byte(`{"ref":"main"}`)
 
