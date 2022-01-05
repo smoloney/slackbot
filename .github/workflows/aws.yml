@@ -103,4 +103,4 @@ jobs:
     - name: test output
       run: echo "${{ env.deploySha }}"
     - name: Signal slack
-      run: curl "http://alb-1-1280613927.us-west-2.elb.amazonaws.com/action-complete?id=smoloney/slack-go&sha=${{ github.sha }}&lastSuccessSha=${{ steps.last-commit.outputs.commit_hash }}"
+      run: curl "http://alb-1-1280613927.us-west-2.elb.amazonaws.com/action-complete?id=smoloney/slackbot&sha=${{ github.sha }}&lastSuccessSha=${{ steps.last-commit.outputs.commit_hash }}"

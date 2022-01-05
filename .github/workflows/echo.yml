@@ -13,3 +13,10 @@ on:
         required: true
         default: ""
         description: Name of repo
+
+jobs:
+  echo:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Echo inputs
+        run: echo "${{ github.event.inputs.SHA }} ${{ github.event.inputs.REPO_NAME }}"

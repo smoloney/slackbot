@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -116,59 +117,17 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		deployInfoMap[callBackSplit[i]] = callBackSplit[i+1]
 	}
 
-	// var jsonStr = []byte(`{"ref":"main"}`)
+	var jsonStr = []byte(`{"ref":"main"}`)
+	requestUrl := fmt.Sprintf("https://api.github.com/repos/%s/actions/workflows/echo.yml/dispatches", deployInfoMap["Repo"])
 
-	// req, err := http.NewRequest("POST", "https://api.github.com/repos/smoloney-org/hello-world/actions/workflows/15727762/dispatches", bytes.NewBuffer(jsonStr))
-	// if err != nil {
-	// 	// handle err
-	// }
-	// req.Header.Set("Accept", "application/vnd.github.v3+json")
-	// req.Header.Set("Authorization", "token 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")
+	req, err := http.NewRequest("POST", requestUrl, bytes.NewBuffer(jsonStr))
+	if err != nil {
+		fmt.Println(err)
+	}
+	req.Header.Set("Accept", "application/vnd.github.v3+json")
+	req.Header.Set("Authorization", "token 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")
 
-	// resp, err := http.DefaultClient.Do(req)
-	// if err != nil {
-	// 	// handle err
-	// }
-	// defer resp.Body.Close()
-	// // log.Println(r.Body)
-	// // if r.Method != http.MethodPost {
-	// // 	log.Printf("[ERROR] Invalid method: %s", r.Method)
-	// // 	w.WriteHeader(http.StatusMethodNotAllowed)
-	// // 	return
-	// // }
-
-	// // buf, err := ioutil.ReadAll(r.Body)
-	// // log.Println(buf)
-	// // if err != nil {
-	// // 	log.Printf("[ERROR] Failed to read request body: %s", err)
-	// // 	w.WriteHeader(http.StatusInternalServerError)
-	// // 	return
-	// // }
-	// // jsonStr, err := url.QueryUnescape(string(buf)[8:])
-
-	// // var message slack.InteractionCallback
-
-	// // if err := json.Unmarshal([]byte(jsonStr), &message); err != nil {
-	// // 	log.Printf("[ERROR] Failed to decode json message from slack: %s", jsonStr)
-	// // 	w.WriteHeader(http.StatusInternalServerError)
-	// // 	return
-	// // }
-	// // if message.Token != h.verificationToken {
-	// // 	log.Printf("[ERROR] Invalid token: %s", message.Token)
-	// // 	w.WriteHeader(http.StatusUnauthorized)
-	// // 	return
-	// // }
-	// // log.Println(message)
-	// // log.Printf(message.Name)
-	// // if message.Name == "productionButton" {
-	// // 	handleHelloCommand(w, r)
-	// // 	// helloMessage()
-	// // 	return
-	// // } else {
-	// // 	log.Printf("[ERROR] ]Invalid action was submitted: %s", message.Name)
-	// // 	w.WriteHeader(http.StatusInternalServerError)
-	// // 	return
-	// // }
+	http.DefaultClient.Do(req)
 
 }
 
