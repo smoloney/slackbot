@@ -96,8 +96,8 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	// log.Println("Printing payload")
 	// log.Println(payload)
-	// fmt.Println("hello world1")
-	// fmt.Println(payload.OriginalMessage.Msg.Attachments[0].Text)
+	fmt.Println("hello world1")
+	fmt.Println(payload.OriginalMessage.Msg.Attachments[0].Text)
 	// fmt.Println(payload.ActionCallback.AttachmentActions.Text)
 
 	outputText := payload.OriginalMessage.Msg.Attachments[0].Text
