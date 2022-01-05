@@ -7,10 +7,10 @@ on:
     inputs:
       SHA:
         description: Sha to deploy
-        required: true
+        required: false
         default: ""
       REPO_NAME:
-        required: true
+        required: false
         default: ""
         description: Name of repo
 
