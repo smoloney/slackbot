@@ -6,7 +6,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"reflect"
 	"strings"
 	"time"
 
@@ -102,16 +101,16 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// fmt.Println(payload.ActionCallback.AttachmentActions.Text)
 
 	outputText := payload.OriginalMessage.Msg.Attachments[0].Text
-	fmt.Println("Type of outputText", reflect.TypeOf(outputText))
-	deployInfoMap := make(map[string]string)
+	fmt.Println(strings.Split(outputText, ":"))
+	// deployInfoMap := make(map[string]string)
 
-	generateMap := make(map[string]string)
-	for _, e := range outputText {
-		e := string(e)
-		parts := strings.Split(e, ":")
-		generateMap[parts[0]] = parts[1]
-	}
-	fmt.Println(deployInfoMap)
+	// generateMap := make(map[string]string)
+	// for _, e := range outputText {
+	// 	e := string(e)
+	// 	parts := strings.Split(e, ":")
+	// 	generateMap[parts[0]] = parts[1]
+	// }
+	// fmt.Println(deployInfoMap)
 
 	// var jsonStr = []byte(`{"ref":"main"}`)
 
