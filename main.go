@@ -18,6 +18,8 @@ var token = os.Getenv("SLACK_AUTH_TOKEN")
 var appToken = os.Getenv("SLACK_APP_TOKEN")
 
 func main() {
+	// str := string([]byte{91, 123, 34, 110, 97, 109, 101, 34, 58, 34, 100, 101, 112, 108, 111, 121, 34, 44, 34, 116, 101, 120, 116, 34, 58, 34, 34, 44, 34, 116, 121, 112, 101, 34, 58, 34, 98, 117, 116, 116, 111, 110, 34, 44, 34, 118, 97, 108, 117, 101, 34, 58, 34, 100, 101, 112, 108, 111, 121, 34, 125, 93})
+	// fmt.Println(str)
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/hello", ServeHTTP)
 	router.HandleFunc("/action-complete", actionComplete).Queries("id", "{id:[a-zA-Z0-9_/-]+}", "sha", "{sha:[a-zA-Z0-9]+}", "lastSuccessSha", "{lastSuccessSha:[a-zA-Z0-9]+}")
@@ -95,7 +97,7 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// log.Println("Printing payload")
 	// log.Println(payload)
 	// fmt.Println("hello world1")
-	fmt.Println(payload.OriginalMessage.Msg.Attachments)
+	fmt.Println(payload.OriginalMessage.Msg.Attachments[0].Text)
 	// fmt.Println(payload.ActionCallback.AttachmentActions.Text)
 
 	fmt.Println(slack.ActionCallbacks.MarshalJSON(payload.ActionCallback))
