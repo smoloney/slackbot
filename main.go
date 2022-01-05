@@ -98,7 +98,7 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	// log.Println("Printing payload")
 	// log.Println(payload)
-
+	log.Println("hello world")
 	log.Println(payload.OriginalMessage.Msg)
 	log.Println(payload.ActionCallback.AttachmentActions)
 
