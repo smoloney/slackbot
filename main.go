@@ -17,7 +17,20 @@ import (
 var token = os.Getenv("SLACK_AUTH_TOKEN")
 var appToken = os.Getenv("SLACK_APP_TOKEN")
 
+type data struct {
+	Repo string
+	Sha  string
+}
+
 func main() {
+	outputText := strings.ReplaceAll(fmt.Sprintf("Repo: smoloney/slack-go \nSHA: 6989ffd533e41844ee19bfbc72cfe6916511790e"), " ", "")
+	splitString := strings.FieldsFunc(outputText, func(r rune) bool { return strings.ContainsRune("\n:", r) })
+	deployInfoMap := make(map[string]string)
+
+	for i := 0; i <= len(splitString)-1; i += 2 {
+		deployInfoMap[splitString[i]] = splitString[i+1]
+	}
+	fmt.Println(deployInfoMap)
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/hello", ServeHTTP)
 	router.HandleFunc("/action-complete", actionComplete).Queries("id", "{id:[a-zA-Z0-9_/-]+}", "sha", "{sha:[a-zA-Z0-9]+}", "lastSuccessSha", "{lastSuccessSha:[a-zA-Z0-9]+}")
@@ -41,7 +54,7 @@ func queryParser(str string) map[string]string {
 
 func actionComplete(w http.ResponseWriter, r *http.Request) {
 	parsedQueries := queryParser(r.URL.RawQuery)
-	textText := fmt.Sprintf("Repo: %s SHA: %s", parsedQueries["id"], parsedQueries["sha"])
+	textText := fmt.Sprintf("Repo: %s \nSHA: %s", parsedQueries["id"], parsedQueries["sha"])
 	titleText := fmt.Sprintf("Deployment alert for %s", parsedQueries["id"])
 	fallBackText := fmt.Sprintf("Deployment to %s", parsedQueries["id"])
 	api := slack.New(token)
@@ -94,24 +107,14 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Printf("Could not parse action response JSON: %v", err)
 	}
-	// log.Println("Printing payload")
-	// log.Println(payload)
-	// fmt.Println("hello world1")
-	// fmt.Println(payload.OriginalMessage.Msg.Attachments[0].Text)
-	// fmt.Println(payload.ActionCallback.AttachmentActions.Text)
 
-	outputText := payload.OriginalMessage.Msg.Attachments[0].Text
-	fmt.Println(outputText)
-	fmt.Println(strings.Split(outputText, ":"))
-	// deployInfoMap := make(map[string]string)
+	callBackText := strings.ReplaceAll(payload.OriginalMessage.Msg.Attachments[0].Text, " ", "")
+	callBackSplit := strings.FieldsFunc(callBackText, func(r rune) bool { return strings.ContainsRune("\n:", r) })
+	deployInfoMap := make(map[string]string)
 
-	// generateMap := make(map[string]string)
-	// for _, e := range outputText {
-	// 	e := string(e)
-	// 	parts := strings.Split(e, ":")
-	// 	generateMap[parts[0]] = parts[1]
-	// }
-	// fmt.Println(deployInfoMap)
+	for i := 0; i <= len(callBackSplit)-1; i += 2 {
+		deployInfoMap[callBackSplit[i]] = callBackSplit[i+1]
+	}
 
 	// var jsonStr = []byte(`{"ref":"main"}`)
 

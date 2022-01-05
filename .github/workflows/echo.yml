@@ -1,0 +1,15 @@
+name: Echo inputs from curl
+
+on: 
+  workflow_dispatch:
+    branches:
+      - main
+    inputs:
+      SHA:
+        description: Sha to deploy
+        required: true
+        default: ""
+      REPO_NAME:
+        required: true
+        default: ""
+        description: Name of repo
