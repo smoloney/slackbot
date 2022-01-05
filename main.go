@@ -18,8 +18,6 @@ var token = os.Getenv("SLACK_AUTH_TOKEN")
 var appToken = os.Getenv("SLACK_APP_TOKEN")
 
 func main() {
-	fmt.Println("Hello world")
-	// parseJson()
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/hello", ServeHTTP)
 	router.HandleFunc("/action-complete", actionComplete).Queries("id", "{id:[a-zA-Z0-9_/-]+}", "sha", "{sha:[a-zA-Z0-9]+}", "lastSuccessSha", "{lastSuccessSha:[a-zA-Z0-9]+}")
@@ -43,8 +41,6 @@ func queryParser(str string) map[string]string {
 
 func actionComplete(w http.ResponseWriter, r *http.Request) {
 	parsedQueries := queryParser(r.URL.RawQuery)
-	fmt.Println(parsedQueries)
-	fmt.Println(parsedQueries["id"])
 	textText := fmt.Sprintf("Deployment alert!\n Repo: %s SHA: %s", parsedQueries["id"], parsedQueries["sha"])
 	fallBackText := fmt.Sprintf("Deployment to %s", parsedQueries["id"])
 	api := slack.New(token)
@@ -98,6 +94,9 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	// log.Println("Printing payload")
 	// log.Println(payload)
+	fmt.Println("hello world1")
+	fmt.Println(payload.OriginalMessage.Msg)
+	fmt.Println(payload.ActionCallback.AttachmentActions)
 	log.Println("hello world")
 	log.Println(payload.OriginalMessage.Msg)
 	log.Println(payload.ActionCallback.AttachmentActions)
