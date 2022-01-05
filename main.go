@@ -95,7 +95,7 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// log.Println("Printing payload")
 	// log.Println(payload)
 	// fmt.Println("hello world1")
-	fmt.Println(payload.OriginalMessage.Msg.Text)
+	fmt.Println(payload.OriginalMessage.Msg.Attachments)
 	// fmt.Println(payload.ActionCallback.AttachmentActions.Text)
 
 	fmt.Println(slack.ActionCallbacks.MarshalJSON(payload.ActionCallback))
