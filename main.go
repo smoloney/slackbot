@@ -101,6 +101,7 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// fmt.Println(payload.ActionCallback.AttachmentActions.Text)
 
 	outputText := payload.OriginalMessage.Msg.Attachments[0].Text
+	fmt.Println(outputText)
 	fmt.Println(strings.Split(outputText, ":"))
 	// deployInfoMap := make(map[string]string)
 
