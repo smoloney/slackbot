@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"reflect"
 	"strings"
 	"time"
 
@@ -101,6 +102,7 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// fmt.Println(payload.ActionCallback.AttachmentActions.Text)
 
 	outputText := payload.OriginalMessage.Msg.Attachments[0].Text
+	fmt.Println("Type of outputText", reflect.TypeOf(outputText))
 	deployInfoMap := make(map[string]string)
 	for _, e := range outputText {
 		parts := strings.Split(string(e), ":")
