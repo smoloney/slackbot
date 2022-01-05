@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -155,89 +154,6 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// // 	return
 	// // }
 
-}
-
-func (a ActionCallbacks) MarshalJSON() ([]byte, error) {
-	count := 0
-	length := len(a.AttachmentActions) + len(a.BlockActions)
-	buffer := bytes.NewBufferString("[")
-
-	f := func(obj interface{}) error {
-		js, err := json.Marshal(obj)
-		if err != nil {
-			return err
-		}
-		_, err = buffer.Write(js)
-		if err != nil {
-			return err
-		}
-
-		count++
-		if count < length {
-			_, err = buffer.WriteString(",")
-			return err
-		}
-		return nil
-	}
-
-	for _, act := range a.AttachmentActions {
-		err := f(act)
-		if err != nil {
-			return nil, err
-		}
-	}
-	for _, blk := range a.BlockActions {
-		err := f(blk)
-		if err != nil {
-			return nil, err
-		}
-	}
-	buffer.WriteString("]")
-	return buffer.Bytes(), nil
-}
-
-// UnmarshalJSON implements the Marshaller interface in order to delegate
-// marshalling and allow for proper type assertion when decoding the response
-func (a *ActionCallbacks) UnmarshalJSON(data []byte) error {
-	var raw []json.RawMessage
-	err := json.Unmarshal(data, &raw)
-	if err != nil {
-		return err
-	}
-
-	for _, r := range raw {
-		var obj map[string]interface{}
-		err := json.Unmarshal(r, &obj)
-		if err != nil {
-			return err
-		}
-
-		if _, ok := obj["block_id"].(string); ok {
-			action, err := unmarshalAction(r, &BlockAction{})
-			if err != nil {
-				return err
-			}
-
-			a.BlockActions = append(a.BlockActions, action.(*BlockAction))
-			continue
-		}
-
-		action, err := unmarshalAction(r, &AttachmentAction{})
-		if err != nil {
-			return err
-		}
-		a.AttachmentActions = append(a.AttachmentActions, action.(*AttachmentAction))
-	}
-
-	return nil
-}
-
-func unmarshalAction(r json.RawMessage, callbackAction action) (action, error) {
-	err := json.Unmarshal(r, callbackAction)
-	if err != nil {
-		return nil, err
-	}
-	return callbackAction, nil
 }
 
 type JsonStruct struct {
