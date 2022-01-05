@@ -104,9 +104,12 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	outputText := payload.OriginalMessage.Msg.Attachments[0].Text
 	fmt.Println("Type of outputText", reflect.TypeOf(outputText))
 	deployInfoMap := make(map[string]string)
+
+	generateMap := make(map[string]string)
 	for _, e := range outputText {
-		parts := strings.Split(string(e), ":")
-		deployInfoMap[parts[0]] = parts[1]
+		e := string(e)
+		parts := strings.Split(e, ":")
+		generateMap[parts[0]] = parts[1]
 	}
 	fmt.Println(deployInfoMap)
 
