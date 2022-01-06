@@ -1,14 +1,13 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"strings"
-	"time"
 
 	"github.com/gorilla/mux"
 
@@ -17,6 +16,7 @@ import (
 
 var token = os.Getenv("SLACK_AUTH_TOKEN")
 var appToken = os.Getenv("SLACK_APP_TOKEN")
+var gitToken = os.Getenv("GIT_TOKEN")
 
 type data struct {
 	Repo string
@@ -31,7 +31,7 @@ func main() {
 	for i := 0; i <= len(splitString)-1; i += 2 {
 		deployInfoMap[splitString[i]] = splitString[i+1]
 	}
-	fmt.Println(deployInfoMap)
+
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/hello", ServeHTTP)
 	router.HandleFunc("/action-complete", actionComplete).Queries("id", "{id:[a-zA-Z0-9_/-]+}", "sha", "{sha:[a-zA-Z0-9]+}", "lastSuccessSha", "{lastSuccessSha:[a-zA-Z0-9]+}")
@@ -102,6 +102,14 @@ func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
+type GithubInput struct {
+	ref    string
+	inputs struct {
+		SHA  string
+		Repo string
+	}
+}
+
 func ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var payload slack.InteractionCallback
 	err := json.Unmarshal([]byte(r.FormValue("payload")), &payload)
@@ -117,72 +125,33 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		deployInfoMap[callBackSplit[i]] = callBackSplit[i+1]
 	}
 
-	var jsonStr = []byte(`{"ref":"main"}`)
-	requestUrl := fmt.Sprintf("https://api.github.com/repos/%s/actions/workflows/echo.yml/dispatches", deployInfoMap["Repo"])
+	githubStruct := GithubInput{
+		ref: "main",
+	}
 
-	req, err := http.NewRequest("POST", requestUrl, bytes.NewBuffer(jsonStr))
+	githubStruct.inputs.SHA = deployInfoMap["SHA"]
+	githubStruct.inputs.Repo = deployInfoMap["Repo"]
+	fmt.Println(githubStruct)
+	b, err := json.Marshal(githubStruct)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	// var jsonStr = []byte(fmt.Sprintf("{\"ref\":\"main\", \"inputs\":{\"SHA:%s}}"")
+	inputValues := fmt.Sprintf("{\"SHA\": %s, \"Repo\": %s}", deployInfoMap["SHA"], deployInfoMap["Repo"])
+	requestUrl := fmt.Sprintf("https://api.github.com/repos/%s/actions/workflows/echo.yml/dispatches", deployInfoMap["Repo"])
+	tokenString := fmt.Sprintf("token %s", gitToken)
+	form := url.Values{}
+	form.Add("ref", "main")
+	form.Add("inputs", inputValues)
+
+	req, err := http.NewRequest("POST", requestUrl, strings.NewReader(form.Encode()))
 	if err != nil {
 		fmt.Println(err)
 	}
 	req.Header.Set("Accept", "application/vnd.github.v3+json")
-	req.Header.Set("Authorization", "token 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")
+	req.Header.Set("Authorization", tokenString)
 
 	http.DefaultClient.Do(req)
 
-}
-
-type JsonStruct struct {
-	Commit struct {
-		Author struct {
-			Date string `json:"date"`
-		}
-	}
-}
-
-func parseJson() {
-
-	jsonData := `{
-		"url": "https://api.github.com/repos/octocat/Hello-World/commits/6dcb09b5b57875f334f61aebed695e2e4193db5e",
-		"sha": "6dcb09b5b57875f334f61aebed695e2e4193db5e",
-		"node_id": "MDY6Q29tbWl0NmRjYjA5YjViNTc4NzVmMzM0ZjYxYWViZWQ2OTVlMmU0MTkzZGI1ZQ==",
-		"html_url": "https://github.com/octocat/Hello-World/commit/6dcb09b5b57875f334f61aebed695e2e4193db5e",
-		"comments_url": "https://api.github.com/repos/octocat/Hello-World/commits/6dcb09b5b57875f334f61aebed695e2e4193db5e/comments",
-		"commit": {
-		  "url": "https://api.github.com/repos/octocat/Hello-World/git/commits/6dcb09b5b57875f334f61aebed695e2e4193db5e",
-		  "author": {
-			"name": "Monalisa Octocat",
-			"email": "mona@github.com",
-			"date": "2011-04-14T16:00:49Z"
-		  },
-		  "committer": {
-			"name": "Monalisa Octocat",
-			"email": "mona@github.com",
-			"date": "2011-04-14T16:00:49Z"
-		  },
-		  "message": "Fix all the bugs",
-		  "tree": {
-			"url": "https://api.github.com/repos/octocat/Hello-World/tree/6dcb09b5b57875f334f61aebed695e2e4193db5e",
-			"sha": "6dcb09b5b57875f334f61aebed695e2e4193db5e"
-		  },
-		  "comment_count": 0,
-		  "verification": {
-			"verified": false,
-			"reason": "unsigned",
-			"signature": null,
-			"payload": null
-		  }
-		}
-	  }
-	`
-
-	var jsonValues JsonStruct
-
-	json.Unmarshal([]byte(jsonData), &jsonValues)
-	dateTime := jsonValues.Commit.Author.Date
-	layout := "2010-01-01T01:00:00z"
-	t, err := time.Parse(layout, dateTime)
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println(t)
 }
