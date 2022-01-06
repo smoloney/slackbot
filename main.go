@@ -24,13 +24,6 @@ type data struct {
 }
 
 func main() {
-	outputText := strings.ReplaceAll(fmt.Sprintf("Repo: smoloney/slack-go \nSHA: 6989ffd533e41844ee19bfbc72cfe6916511790e"), " ", "")
-	splitString := strings.FieldsFunc(outputText, func(r rune) bool { return strings.ContainsRune("\n:", r) })
-	deployInfoMap := make(map[string]string)
-
-	for i := 0; i <= len(splitString)-1; i += 2 {
-		deployInfoMap[splitString[i]] = splitString[i+1]
-	}
 
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/hello", ServeHTTP)
@@ -102,14 +95,6 @@ func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-type GithubInput struct {
-	ref    string
-	inputs struct {
-		SHA  string
-		Repo string
-	}
-}
-
 func ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var payload slack.InteractionCallback
 	err := json.Unmarshal([]byte(r.FormValue("payload")), &payload)
@@ -123,18 +108,6 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	for i := 0; i <= len(callBackSplit)-1; i += 2 {
 		deployInfoMap[callBackSplit[i]] = callBackSplit[i+1]
-	}
-
-	githubStruct := GithubInput{
-		ref: "main",
-	}
-
-	githubStruct.inputs.SHA = deployInfoMap["SHA"]
-	githubStruct.inputs.Repo = deployInfoMap["Repo"]
-	fmt.Println(githubStruct)
-	b, err := json.Marshal(githubStruct)
-	if err != nil {
-		fmt.Println(err)
 	}
 
 	// var jsonStr = []byte(fmt.Sprintf("{\"ref\":\"main\", \"inputs\":{\"SHA:%s}}"")
