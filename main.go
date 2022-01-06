@@ -110,21 +110,20 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		deployInfoMap[callBackSplit[i]] = callBackSplit[i+1]
 	}
 
-	// var jsonStr = []byte(fmt.Sprintf("{\"ref\":\"main\", \"inputs\":{\"SHA:%s}}"")
 	inputValues := fmt.Sprintf("{\"SHA\": %s, \"Repo\": %s}", deployInfoMap["SHA"], deployInfoMap["Repo"])
 	requestUrl := fmt.Sprintf("https://api.github.com/repos/%s/actions/workflows/echo.yml/dispatches", deployInfoMap["Repo"])
 	tokenString := fmt.Sprintf("token %s", gitToken)
-	form := url.Values{}
-	form.Add("ref", "main")
-	form.Add("inputs", inputValues)
 
-	req, err := http.NewRequest("POST", requestUrl, strings.NewReader(form.Encode()))
-	if err != nil {
-		fmt.Println(err)
-	}
+	form := url.Values{}
+	form.Set("ref", "main")
+	form.Set("inputs", inputValues)
+
+	client := &http.Client{}
+	req, _ := http.NewRequest(http.MethodPost, requestUrl, strings.NewReader(form.Encode()))
 	req.Header.Set("Accept", "application/vnd.github.v3+json")
 	req.Header.Set("Authorization", tokenString)
 
-	http.DefaultClient.Do(req)
+	resp, _ := client.Do(req)
+	fmt.Println(resp.Status)
 
 }
