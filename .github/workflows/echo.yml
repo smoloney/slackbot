@@ -20,3 +20,5 @@ jobs:
     steps:
       - name: Echo inputs
         run: echo "${{ github.event.inputs.SHA }} ${{ github.event.inputs.REPO_NAME }}"
+      - name: ansible
+        run: ansible-playbook --help
