@@ -1,0 +1,11 @@
+  - package-ecosystem: gomod
+    directory: /
+    schedule:
+      interval: daily
+      time: "08:50"
+      timezone: "America/Los_Angeles"
+    commit-message:
+      prefix: "go:"
+    labels:
+      - c:deps
+      - golang
