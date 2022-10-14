@@ -13,7 +13,7 @@ import (
 
 	"github.com/slack-go/slack"
 )
-
+foobar
 var token = os.Getenv("SLACK_AUTH_TOKEN")
 var appToken = os.Getenv("SLACK_APP_TOKEN")
 var gitToken = os.Getenv("GIT_TOKEN")
